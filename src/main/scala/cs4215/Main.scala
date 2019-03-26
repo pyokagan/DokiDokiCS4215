@@ -5,7 +5,7 @@ import org.lwjgl.glfw.GLFW._
 import org.lwjgl.opengl._
 
 object Main {
-  var title = "The Question"
+  val Title = "The Question"
   private var window = 0L
 
   def main(args: Array[String]): Unit = {
@@ -21,11 +21,11 @@ object Main {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2)
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE)
-    window = glfwCreateWindow(1280, 720, title, 0, 0)
+    window = glfwCreateWindow(1280, 720, Title, 0, 0)
     if (window == 0)
       throw new RuntimeException("Failed to create the GLFW window")
     glfwMakeContextCurrent(window)
-    GL.createCapabilities
+    GL.createCapabilities()
   }
 
   private def loop(): Unit = {

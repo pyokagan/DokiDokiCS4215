@@ -24,6 +24,11 @@ object Scene {
       RenderSquare(mvpMatrix, color)
   }
 
+  class ImageNode(var texture: Texture, var opacity: Float = 1.0f, pose: Pose = new Pose()) extends SceneNode(pose) {
+    def render(mvpMatrix: Matrix4fc): Unit =
+      RenderImage(texture, mvpMatrix, opacity)
+  }
+
   private def setViewportPreservingAspectRatio(width: Int, height: Int): Unit = {
     val aspectWH = AspectRatio
     val aspectHW = 1f / aspectWH
@@ -63,5 +68,7 @@ object Scene {
 
   def dispose(): Unit = {
     RenderSquare.dispose()
+    RenderImage.dispose()
+    Texture.disposeAll()
   }
 }

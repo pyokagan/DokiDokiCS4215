@@ -28,6 +28,11 @@ object Main {
       throw new RuntimeException("Failed to create the GLFW window")
     glfwMakeContextCurrent(window)
     GL.createCapabilities()
+
+    // TODO: Code to test Scene. To be removed.
+    Scene += new Scene.ImageNode("bg uni.jpg") {
+      pose.position.z = -10.0f
+    }
   }
 
   private def loop(): Unit = withStack(stack => {

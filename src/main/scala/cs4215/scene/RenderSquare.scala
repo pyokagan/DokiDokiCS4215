@@ -1,0 +1,62 @@
+package cs4215.scene
+
+import org.joml._
+import org.lwjgl.opengl.GL11C._
+import org.lwjgl.opengl.GL15C._
+import org.lwjgl.opengl.GL20C._
+import org.lwjgl.opengl.GL30C._
+
+/**
+ * Renders a 1x1 square.
+ */
+private object RenderSquare {
+  lazy val program = new Program("""
+    #version 130
+    in vec2 aPos;
+    uniform mat4 uMVPMatrix;
+    void main() {
+      gl_Position = uMVPMatrix * vec4(aPos, 0.f, 1.f);
+    }
+  """, """
+    #version 130
+    uniform vec4 uColor;
+    void main() {
+      gl_FragColor = uColor;
+    }
+  """)
+  private val vertexData: Array[Float] = Array(
+    -0.5f, -0.5f, // a
+    0.5f, -0.5f, // b
+    0.5f, 0.5f, // c
+    0.5f, 0.5f, // c
+    -0.5f, 0.5f, // d
+    -0.5f, -0.5f, // a
+  )
+  lazy val arrayBuf = glGenBuffers()
+  lazy val vao = {
+    val vao = glGenVertexArrays()
+    glBindVertexArray(vao)
+    glBindBuffer(GL_ARRAY_BUFFER, arrayBuf)
+    glBufferData(GL_ARRAY_BUFFER, vertexData, GL_STATIC_DRAW)
+    val aPosLoc = program.getAttribLocation("aPos")
+    glVertexAttribPointer(aPosLoc, 2, GL_FLOAT, false, 8, 0)
+    glEnableVertexAttribArray(aPosLoc)
+    glBindVertexArray(0)
+    vao
+  }
+
+  def apply(uMVPMatrix: Matrix4fc, uColor: Vector4fc): Unit = {
+    glBindVertexArray(vao)
+    program.use()
+    program.setUniform("uMVPMatrix", uMVPMatrix)
+    program.setUniform("uColor", uColor)
+    glDrawArrays(GL_TRIANGLES, 0, 6)
+    glBindVertexArray(0)
+  }
+
+  def dispose(): Unit = {
+    glDeleteVertexArrays(vao)
+    glDeleteBuffers(arrayBuf)
+    program.dispose()
+  }
+}

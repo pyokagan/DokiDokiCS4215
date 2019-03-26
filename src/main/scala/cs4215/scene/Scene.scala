@@ -1,0 +1,67 @@
+package cs4215.scene
+
+import org.joml._
+import org.lwjgl.opengl.GL11C._
+
+object Scene {
+  val VirtualWidth = 1280
+  val VirtualHeight = 720
+  val AspectRatio = VirtualWidth.toFloat / VirtualHeight.toFloat
+  val FrontZ = 1000f
+  val BackZ = -1000f
+
+  private val pMatrix = new Matrix4f().ortho(-VirtualWidth / 2f, VirtualWidth / 2f, -VirtualHeight / 2f, VirtualHeight / 2f, FrontZ, BackZ)
+  private val mMatrix = new Matrix4f()
+  private val mvpMatrix = new Matrix4f()
+  private val sceneNodes = scala.collection.mutable.HashSet.empty[SceneNode]
+
+  abstract class SceneNode(val pose: Pose = new Pose()) {
+    def render(mvpMatrix: Matrix4fc): Unit
+  }
+
+  class SquareNode(var color: Vector4f = new Vector4f(1f), pose: Pose = new Pose()) extends SceneNode(pose) {
+    def render(mvpMatrix: Matrix4fc): Unit =
+      RenderSquare(mvpMatrix, color)
+  }
+
+  private def setViewportPreservingAspectRatio(width: Int, height: Int): Unit = {
+    val aspectWH = AspectRatio
+    val aspectHW = 1f / aspectWH
+    val (viewW, viewH) = if (width > height) {
+      val viewH = math.min(width * aspectHW, height)
+      val viewW = viewH * aspectWH
+      (viewW, viewH)
+    } else {
+      val viewW = math.min(height * aspectWH, width)
+      val viewH = viewW * aspectHW
+      (viewW, viewH)
+    }
+    val viewX = (width - viewW) / 2f
+    val viewY = (height - viewH) / 2f
+    glViewport(viewX.toInt, viewY.toInt, viewW.toInt, viewH.toInt)
+  }
+
+  def +=(sceneNode: SceneNode): Unit =
+    sceneNodes += sceneNode
+
+  def -=(sceneNode: SceneNode): Unit =
+    sceneNodes -= sceneNode
+
+  def render(viewportWidth: Int, viewportHeight: Int): Unit = {
+    setViewportPreservingAspectRatio(viewportWidth, viewportHeight)
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+    glDisable(GL_DEPTH_TEST)
+    glDepthMask(false)
+    glEnable(GL_BLEND)
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+    sceneNodes.toSeq.sorted(Ordering.by[SceneNode, Float](_.pose.position.z)).foreach(sceneNode => {
+      sceneNode.pose.toMatrix4f(mMatrix)
+      mvpMatrix.set(pMatrix).mul(mMatrix)
+      sceneNode.render(mvpMatrix)
+    })
+  }
+
+  def dispose(): Unit = {
+    RenderSquare.dispose()
+  }
+}

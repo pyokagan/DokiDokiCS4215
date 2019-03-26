@@ -28,9 +28,7 @@ private object RenderSquare {
     -0.5f, -0.5f, // a
     0.5f, -0.5f, // b
     0.5f, 0.5f, // c
-    0.5f, 0.5f, // c
     -0.5f, 0.5f, // d
-    -0.5f, -0.5f, // a
   )
   lazy val arrayBuf = glGenBuffers()
   lazy val vao = {
@@ -41,6 +39,7 @@ private object RenderSquare {
     val aPosLoc = program.getAttribLocation("aPos")
     glVertexAttribPointer(aPosLoc, 2, GL_FLOAT, false, 8, 0)
     glEnableVertexAttribArray(aPosLoc)
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, QuadElem.glBuf)
     glBindVertexArray(0)
     vao
   }
@@ -50,7 +49,7 @@ private object RenderSquare {
     program.use()
     program.setUniform("uMVPMatrix", uMVPMatrix)
     program.setUniform("uColor", uColor)
-    glDrawArrays(GL_TRIANGLES, 0, 6)
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0)
     glBindVertexArray(0)
   }
 

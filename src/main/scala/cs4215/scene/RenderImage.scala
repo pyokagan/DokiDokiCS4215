@@ -35,9 +35,7 @@ private object RenderImage {
     -0.5f, -0.5f, 0.0f, 1.0f, // a
     0.5f, -0.5f, 1.0f, 1.0f, // b
     0.5f, 0.5f, 1.0f, 0.0f, // c
-    0.5f, 0.5f, 1.0f, 0.0f, // c
     -0.5f, 0.5f, 0.0f, 0.0f, // d
-    -0.5f, -0.5f, 0.0f, 1.0f, // a
   )
   lazy val arrayBuf = glGenBuffers()
   lazy val vao = {
@@ -51,6 +49,7 @@ private object RenderImage {
     val aUVLoc = program.getAttribLocation("aUV")
     glVertexAttribPointer(aUVLoc, 2, GL_FLOAT, false, 16, 8)
     glEnableVertexAttribArray(aUVLoc)
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, QuadElem.glBuf)
     glBindVertexArray(0)
     vao
   }
@@ -63,7 +62,7 @@ private object RenderImage {
     program.setUniform("uOpacity", uOpacity)
     program.setUniform("uSize", tex.width, tex.height)
     tex.bind(0)
-    glDrawArrays(GL_TRIANGLES, 0, 6)
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0)
     glBindVertexArray(0)
   }
 

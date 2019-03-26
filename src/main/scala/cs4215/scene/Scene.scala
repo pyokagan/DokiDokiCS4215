@@ -70,5 +70,6 @@ object Scene {
     RenderSquare.dispose()
     RenderImage.dispose()
     Texture.disposeAll()
+    QuadElem.dispose()
   }
 }

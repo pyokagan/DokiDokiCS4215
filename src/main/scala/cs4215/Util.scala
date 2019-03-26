@@ -28,6 +28,15 @@ private object Util {
       f(buf)
     })
 
+  def withMallocShort[T](n: Int)(f: java.nio.ShortBuffer => T): T = {
+    val x = MemoryUtil.memAllocShort(n)
+    try {
+      f(x)
+    } finally {
+      MemoryUtil.memFree(x)
+    }
+  }
+
   def readAllBytes(s: java.io.InputStream): Array[Byte] = {
     def aux(buf: scala.collection.mutable.ArrayBuffer[Byte], b: Int): Array[Byte] =
       if (b < 0) {

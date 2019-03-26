@@ -23,4 +23,5 @@ object Dependencies {
   lazy val lwjglOpenglNative = "org.lwjgl" % "lwjgl-opengl" % lwjglVersion classifier lwjglClassifier
   lazy val lwjglStb = "org.lwjgl" % "lwjgl-stb" % lwjglVersion
   lazy val lwjglStbNative = "org.lwjgl" % "lwjgl-stb" % lwjglVersion classifier lwjglClassifier
+  lazy val joml = "org.joml" % "joml" % "1.9.13"
 }

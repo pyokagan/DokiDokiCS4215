@@ -19,4 +19,5 @@ lazy val root = (project in file("."))
     libraryDependencies += lwjglOpenglNative,
     libraryDependencies += lwjglStb,
     libraryDependencies += lwjglStbNative,
+    libraryDependencies += joml,
   )

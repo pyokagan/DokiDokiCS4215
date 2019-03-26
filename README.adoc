@@ -1,0 +1,9 @@
+= Doki Doki CS4215
+
+== Getting Started
+
+Running the program:
+
+----
+sbt run
+----

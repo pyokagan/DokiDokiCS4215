@@ -9,4 +9,14 @@ lazy val root = (project in file("."))
   .settings(
     name := "DokiDokiCS4215",
     libraryDependencies += scalaTest % Test,
+    libraryDependencies += lwjgl,
+    libraryDependencies += lwjglNative,
+    libraryDependencies += lwjglGlfw,
+    libraryDependencies += lwjglGlfwNative,
+    libraryDependencies += lwjglOpenal,
+    libraryDependencies += lwjglOpenalNative,
+    libraryDependencies += lwjglOpengl,
+    libraryDependencies += lwjglOpenglNative,
+    libraryDependencies += lwjglStb,
+    libraryDependencies += lwjglStbNative,
   )

@@ -29,6 +29,11 @@ object Scene {
       RenderImage(texture, mvpMatrix, opacity)
   }
 
+  class TextNode(var text: String, var maxWidth: Float = Float.PositiveInfinity, var font: Font = "OpenSans-Regular.ttf", pose: Pose = new Pose()) extends SceneNode(pose) {
+    def render(mvpMatrix: Matrix4fc): Unit =
+      RenderText(font, mvpMatrix, text, maxWidth)
+  }
+
   private def setViewportPreservingAspectRatio(width: Int, height: Int): Unit = {
     val aspectWH = AspectRatio
     val aspectHW = 1f / aspectWH
@@ -69,7 +74,9 @@ object Scene {
   def dispose(): Unit = {
     RenderSquare.dispose()
     RenderImage.dispose()
+    RenderText.dispose()
     Texture.disposeAll()
+    Font.disposeAll()
     QuadElem.dispose()
   }
 }

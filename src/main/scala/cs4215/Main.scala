@@ -33,6 +33,7 @@ object Main {
     Scene += new Scene.ImageNode("bg uni.jpg") {
       pose.position.z = -10.0f
     }
+    Scene += new Scene.TextNode("Hello World!", 0f)
   }
 
   private def loop(): Unit = withStack(stack => {

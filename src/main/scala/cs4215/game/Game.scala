@@ -1,5 +1,6 @@
 package cs4215.game
 
+import cs4215.events._
 import cs4215.scene.Scene
 
 import scala.concurrent.{ExecutionContext, Future, Promise}
@@ -29,8 +30,11 @@ object Game {
       pose.scale.y = 0.3f
     }
 
-    // Return a promise which never completes (i.e. the game runs forever)
-    val p = Promise[Unit]()
-    p.future
+    for {
+      _ <- Events.waitForKeyPress(KeyE)
+      _ <- Events.waitForKeyPress(KeyX)
+      _ <- Events.waitForKeyPress(KeyI)
+      _ <- Events.waitForKeyPress(KeyT)
+    } yield ()
   }
 }

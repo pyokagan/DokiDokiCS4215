@@ -1,6 +1,7 @@
 package cs4215
 
 import cs4215.Util._
+import cs4215.events.Events
 import cs4215.game.Game
 import cs4215.scene.Scene
 import org.lwjgl.glfw.GLFW._
@@ -30,6 +31,7 @@ object Main {
     window = glfwCreateWindow(Scene.VirtualWidth, Scene.VirtualHeight, Title, 0, 0)
     if (window == 0)
       throw new RuntimeException("Failed to create the GLFW window")
+    Events.init(window)
     glfwMakeContextCurrent(window)
     GL.createCapabilities()
     Game.run()(ExecutionContext.fromExecutor(enqueueCallback))
@@ -56,6 +58,7 @@ object Main {
 
   private def dispose(): Unit = {
     Scene.dispose()
+    Events.dispose(window)
     glfwDestroyWindow(window)
     glfwTerminate()
     glfwSetErrorCallback(null).free()

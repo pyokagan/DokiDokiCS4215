@@ -1,22 +1,26 @@
 package cs4215
 
 import cs4215.Util._
+import cs4215.game.Game
 import cs4215.scene.Scene
 import org.lwjgl.glfw.GLFW._
 import org.lwjgl.glfw._
 import org.lwjgl.opengl._
 
+import scala.concurrent.{ExecutionContext, Future}
+
 object Main {
   val Title = "The Question"
   private var window = 0L
+  private val callbackQueue = scala.collection.mutable.Queue.empty[Runnable]
 
   def main(args: Array[String]): Unit = {
-    init()
-    loop()
+    val fut = init()
+    loop(fut)
     dispose()
   }
 
-  private def init(): Unit = {
+  private def init(): Future[Unit] = {
     GLFWErrorCallback.createPrint(System.err).set()
     if (!glfwInit())
       throw new RuntimeException("Unable to initialize GLFW")
@@ -28,33 +32,21 @@ object Main {
       throw new RuntimeException("Failed to create the GLFW window")
     glfwMakeContextCurrent(window)
     GL.createCapabilities()
-
-    // TODO: Code to test Scene. To be removed.
-    Scene += new Scene.ImageNode("bg uni.jpg") {
-      pose.position.z = -10.0f
-    }
-    Scene += new Scene.ImageNode("sylvie blue normal.png") {
-      pose.position.y = -10.0f
-    }
-    Scene += new Scene.ImageNode("textbox.png") {
-      pose.position.z = 10.0f
-      pose.position.y = -268.0f
-    }
-    Scene += new Scene.TextNode("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse euismod diam nec elit ultrices rhoncus. Nullam non facilisis est. Morbi tempor facilisis aliquet. Donec eu feugiat sapien.") {
-      maxWidth = 700.0f / 0.3f
-      pose.position.z = 20.0f
-      pose.position.y = -220.0f
-      pose.position.x = -360.0f
-      pose.scale.x = 0.3f
-      pose.scale.y = 0.3f
-    }
+    Game.run()(ExecutionContext.fromExecutor(enqueueCallback))
   }
 
-  private def loop(): Unit = withStack(stack => {
+  private def loop(fut: Future[Unit]): Unit = withStack(stack => {
     val widthBuf = stack.callocInt(1)
     val heightBuf = stack.callocInt(1)
 
-    while (!glfwWindowShouldClose(window)) {
+    while (!glfwWindowShouldClose(window) && !fut.isCompleted) {
+      // Run callbacks
+      while (!callbackQueue.isEmpty) {
+        val cb = callbackQueue.dequeue()
+        cb.run()
+      }
+
+      // Render
       glfwGetWindowSize(window, widthBuf, heightBuf)
       Scene.render(widthBuf.get(0), heightBuf.get(0))
       glfwSwapBuffers(window)
@@ -67,5 +59,9 @@ object Main {
     glfwDestroyWindow(window)
     glfwTerminate()
     glfwSetErrorCallback(null).free()
+  }
+
+  private def enqueueCallback(cb: Runnable): Unit = {
+    callbackQueue.enqueue(cb)
   }
 }

@@ -42,7 +42,7 @@ private object RenderText {
   def put(i: Int, x: Float): Unit = {
     val (glVao, glBuf, buf) = buffers(i)
     if (buf.remaining <= 0) {
-      val prevPosition = buf.position
+      val prevPosition = buf.position()
       val newBuf = MemoryUtil.memRealloc(buf, (buf.capacity * 3) / 2)
       newBuf.position(prevPosition)
       buffers.update(i, (glVao, glBuf, newBuf))
@@ -108,7 +108,7 @@ private object RenderText {
     }
     val (glVao, _, buf) = buffers(idx)
     glBindVertexArray(glVao)
-    val bufPos = buf.position
+    val bufPos = buf.position()
     buf.rewind()
     glBufferData(GL_ARRAY_BUFFER, MemoryUtil.memSlice(buf, 0, bufPos), GL_DYNAMIC_DRAW)
     program.use()

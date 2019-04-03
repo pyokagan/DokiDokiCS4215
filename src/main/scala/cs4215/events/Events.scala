@@ -9,8 +9,8 @@ object Events {
   private val onKeyPress = scala.collection.mutable.HashSet.empty[Key => Unit]
 
   def init(window: Long): Unit = {
-    glfwSetKeyCallback(window, (_, glfwKey, _, _, _) => {
-      if (glfwKey != GLFW_KEY_UNKNOWN)
+    glfwSetKeyCallback(window, (_, glfwKey, _, action, _) => {
+      if (glfwKey != GLFW_KEY_UNKNOWN && action == GLFW_PRESS)
         onKeyPress.toList.foreach(_(Key.fromGlfwKey(glfwKey)))
     })
   }

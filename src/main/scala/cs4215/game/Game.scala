@@ -20,15 +20,13 @@ object Game {
     node.pose.scale.y = 0.3f
 
     for {
-      //_ <- Events.waitForKeyPress(KeySpace)
       _ <- {
-
         Scene += node
         Events.waitForKeyPress(KeySpace)
       }
       _ <- {
         Scene -= node
-        Events.waitForKeyPress() //Todo: create promise tht auto-complete
+        Events.nextEvent
       }
     } yield()
   }
@@ -59,7 +57,7 @@ object Game {
     node.pose.scale.y = 0.3f
     Scene += node
 
-    /*
+/*
     Scene += new Scene.TextNode("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse euismod diam nec elit ultrices rhoncus. Nullam non facilisis est. Morbi tempor facilisis aliquet. Donec eu feugiat sapien.") {
       maxWidth = 700.0f / 0.3f
       pose.position.z = 20.0f
@@ -68,19 +66,7 @@ object Game {
       pose.scale.x = 0.3f
       pose.scale.y = 0.3f
     }
-    */
-
-
-    /*
-    for {
-      _ <- Events.waitForKeyPress(KeyE)
-      _ <- Events.waitForKeyPress(KeyX)
-      _ <- Events.waitForKeyPress(KeyI)
-      _ <- Events.waitForKeyPress(KeyT)
-    } yield ()*/
-
-    //say(node, "Veni Vidi Vici")
-    //say(node, "Hello World!")
+*/
 
     for {
       _ <- say("Veni Vidi Vici")

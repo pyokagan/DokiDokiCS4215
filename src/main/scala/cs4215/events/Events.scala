@@ -10,7 +10,7 @@ object Events {
 
   def init(window: Long): Unit = {
     glfwSetKeyCallback(window, (_, glfwKey, _, action, _) => {
-      if (glfwKey != GLFW_KEY_UNKNOWN & action == GLFW_PRESS)
+      if (glfwKey != GLFW_KEY_UNKNOWN && action == GLFW_PRESS)
         onKeyPress.toList.foreach(_(Key.fromGlfwKey(glfwKey)))
     })
   }

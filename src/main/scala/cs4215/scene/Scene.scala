@@ -79,4 +79,8 @@ object Scene {
     Font.disposeAll()
     QuadElem.dispose()
   }
+
+  def clear(): Unit = {
+    if (sceneNodes.nonEmpty) sceneNodes.clear()
+  }
 }

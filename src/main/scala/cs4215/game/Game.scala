@@ -10,7 +10,7 @@ import scala.concurrent.{ExecutionContext, Future, Promise}
  */
 object Game {
 
-  def say(char: String, msg: String)(implicit ec: ExecutionContext): Future[Unit] = {
+  def say(char: String = "", msg: String)(implicit ec: ExecutionContext): Future[Unit] = {
     val msgNode = new Scene.TextNode(msg)
     msgNode.maxWidth = 700.0f / 0.25f
     msgNode.pose.position.z = 20.0f
@@ -117,10 +117,10 @@ object Game {
     for {
       _ <- scene("bg uni.jpg")
       _ <- say("Test1", "Veni Vidi Vici")
-      _ <- say ("Test2", "Hello World!")
+      _ <- say (msg = "Hello World!")
       _ <- scene("bg meadow.jpg")
       _ <- say ("Test3", "In vino veritas")
-      _ <- say ("Test4", "Hello World!")
+      _ <- say ("Me", "Hey... Umm...")
       _ <- Events.waitForKeyPress(KeyEscape)
     } yield()
   }

@@ -10,34 +10,39 @@ import scala.concurrent.{ExecutionContext, Future, Promise}
  */
 object Game {
 
-  def say(msg: String)(implicit ec: ExecutionContext): Future[Unit] = {
+  def say(char: String, msg: String)(implicit ec: ExecutionContext): Future[Unit] = {
     val msgNode = new Scene.TextNode(msg)
-    msgNode.maxWidth = 700.0f / 0.3f
+    msgNode.maxWidth = 700.0f / 0.25f
     msgNode.pose.position.z = 20.0f
-    msgNode.pose.position.y = -220.0f
+    msgNode.pose.position.y = -250.0f
     msgNode.pose.position.x = -360.0f
-    msgNode.pose.scale.x = 0.3f
-    msgNode.pose.scale.y = 0.3f
+    msgNode.pose.scale.x = 0.25f
+    msgNode.pose.scale.y = 0.25f
 
     //ToDo: Consider optimising textbox addition and removal
     val textbox = new Scene.ImageNode("textbox.png")
     textbox.pose.position.z = 10.0f
     textbox.pose.position.y = -268.0f
 
+    //ToDo: Implement character customisation
+    val charName = new Scene.TextNode(char)
+    charName.maxWidth = 700.0f / 0.28f
+    charName.pose.position.z = 20.0f
+    charName.pose.position.y = -205.0f
+    charName.pose.position.x = -380.0f
+    charName.pose.scale.x = 0.28f
+    charName.pose.scale.y = 0.28f
+
     for {
       _ <- {
         Scene += textbox
-        Events.nextEvent
-      }
-      _ <- {
+        Scene += charName
         Scene += msgNode
         Events.waitForKeyPress(KeySpace)
       }
       _ <- {
+        Scene -= charName
         Scene -= msgNode
-        Events.nextEvent
-      }
-      _ <- {
         Scene -= textbox
         Events.nextEvent
       }
@@ -111,11 +116,11 @@ object Game {
 
     for {
       _ <- scene("bg uni.jpg")
-      _ <- say("Veni Vidi Vici")
-      _ <- say ("Hello World!")
+      _ <- say("Test1", "Veni Vidi Vici")
+      _ <- say ("Test2", "Hello World!")
       _ <- scene("bg meadow.jpg")
-      _ <- say ("In vino veritas")
-      _ <- say ("Hello World!")
+      _ <- say ("Test3", "In vino veritas")
+      _ <- say ("Test4", "Hello World!")
       _ <- Events.waitForKeyPress(KeyEscape)
     } yield()
   }

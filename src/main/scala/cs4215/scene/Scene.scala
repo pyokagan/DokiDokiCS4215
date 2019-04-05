@@ -29,6 +29,8 @@ object Scene {
       RenderImage(texture, mvpMatrix, opacity)
   }
 
+  class SpriteNode(var sprite: Texture, var sprite_opacity: Float = 1.0f, pose: Pose = new Pose()) extends ImageNode(sprite)
+
   class TextNode(var text: String, var maxWidth: Float = Float.PositiveInfinity, var font: Font = "OpenSans-Regular.ttf", pose: Pose = new Pose()) extends SceneNode(pose) {
     def render(mvpMatrix: Matrix4fc): Unit =
       RenderText(font, mvpMatrix, text, maxWidth)
@@ -81,6 +83,13 @@ object Scene {
   }
 
   def clear(): Unit = {
-    if (sceneNodes.nonEmpty) sceneNodes.clear()
+    sceneNodes.clear()
+  }
+
+  def clearSprites(): Unit = {
+    sceneNodes.foreach(x => x match {
+      case a: SpriteNode => sceneNodes -= a
+      case _ =>
+    })
   }
 }

@@ -24,7 +24,7 @@ object Game {
     textbox.pose.position.z = 10.0f
     textbox.pose.position.y = -268.0f
 
-    //ToDo: Implement character customisation
+    //ToDo: Implement character customisation [Character Objects instead of Character String]
     val charName = new Scene.TextNode(char)
     charName.maxWidth = 700.0f / 0.28f
     charName.pose.position.z = 20.0f
@@ -50,12 +50,13 @@ object Game {
   }
 
   def scene(texture: Texture)(implicit ec: ExecutionContext): Future[Unit] = {
-    Scene.clear
-    val node = new Scene.ImageNode(texture)
-    //ToDo: Implement bg depth
+    val bg = new Scene.ImageNode(texture)
+    bg.pose.position.z = -100.0f
+
     for {
       _ <- {
-        Scene += node
+        Scene.clear
+        Scene += bg
         Events.nextEvent
       }
     } yield()
@@ -63,10 +64,10 @@ object Game {
   }
 
   def show(texture: Texture)(implicit ec: ExecutionContext): Future[Unit] = {
-    val node = new Scene.ImageNode(texture)
-    //ToDo: Implement sprite removal and layering
+    val node = new Scene.SpriteNode(texture)
     for {
       _ <- {
+        Scene.clearSprites
         Scene += node
         Events.nextEvent
       }
@@ -118,9 +119,20 @@ object Game {
       _ <- scene("bg uni.jpg")
       _ <- say("Test1", "Veni Vidi Vici")
       _ <- say (msg = "Hello World!")
+
       _ <- scene("bg meadow.jpg")
       _ <- say ("Test3", "In vino veritas")
-      _ <- say ("Me", "Hey... Umm...")
+      _ <- say ("Me4", "Hey... Umm...")
+
+
+      _ <- show("sylvie blue giggle.png")
+      _ <- Events.waitForKeyPress(KeySpace)
+      _ <- show("sylvie green normal.png")
+      _ <- Events.waitForKeyPress(KeySpace)
+
+      _ <- scene("bg club.jpg")
+      _ <- say("Test5", "Ad Astra")
+
       _ <- Events.waitForKeyPress(KeyEscape)
     } yield()
   }

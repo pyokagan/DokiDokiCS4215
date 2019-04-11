@@ -41,7 +41,7 @@ object Dsl {
         charName.text = char.name
         fadeIn(msgNode, 0.15f)
       }
-      _ <- Events.waitForKeyPress(KeySpace)
+      _ <- Events.waitForMouseButtonPress(MouseButtonLeft)
       _ <- {
         Scene -= charName
         Scene -= msgNode

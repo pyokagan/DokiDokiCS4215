@@ -28,7 +28,7 @@ private object RenderText {
     uniform float uOpacity;
     void main() {
       float a = texture(uTexture, vUV).r;
-      gl_FragColor = vec4(1.0f, 1.0f, 1.0f, floor(a + 0.5f));
+      gl_FragColor = vec4(1.0f, 1.0f, 1.0f, floor(a + 0.6f));
       float w = fwidth(a);
       gl_FragColor.a *= smoothstep(0.5 - w, 0.5 + w, a);
       gl_FragColor.a *= uOpacity;

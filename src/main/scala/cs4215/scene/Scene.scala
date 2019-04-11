@@ -13,7 +13,7 @@ object Scene {
   private val pMatrix = new Matrix4f().ortho(-VirtualWidth / 2f, VirtualWidth / 2f, -VirtualHeight / 2f, VirtualHeight / 2f, FrontZ, BackZ)
   private val mMatrix = new Matrix4f()
   private val mvpMatrix = new Matrix4f()
-  private val sceneNodes = scala.collection.mutable.HashSet.empty[SceneNode]
+  private var sceneNodes = scala.collection.mutable.HashSet.empty[SceneNode]
 
   abstract class SceneNode(val pose: Pose = new Pose()) {
     def render(mvpMatrix: Matrix4fc): Unit
@@ -28,6 +28,8 @@ object Scene {
     def render(mvpMatrix: Matrix4fc): Unit =
       RenderImage(texture, mvpMatrix, opacity)
   }
+
+  class SpriteNode(texture: Texture, opacity: Float = 1.0f, pose: Pose = new Pose()) extends ImageNode(texture, opacity, pose)
 
   class TextNode(var text: String, var maxWidth: Float = Float.PositiveInfinity, var font: Font = "OpenSans-Regular.ttf", pose: Pose = new Pose()) extends SceneNode(pose) {
     def render(mvpMatrix: Matrix4fc): Unit =
@@ -78,5 +80,13 @@ object Scene {
     Texture.disposeAll()
     Font.disposeAll()
     QuadElem.dispose()
+  }
+
+  def clear(): Unit = {
+    sceneNodes.clear()
+  }
+
+  def clearSprites(): Unit = {
+    sceneNodes = sceneNodes.filter { case _: SpriteNode => false case _ => true }
   }
 }

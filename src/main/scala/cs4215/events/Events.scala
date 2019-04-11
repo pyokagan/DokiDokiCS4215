@@ -38,4 +38,12 @@ object Events {
 
   def waitForKeyPress()(implicit ec: ExecutionContext): Future[Key] =
     waitForKeyPress(_ => true)
+
+
+  /** Returns empty future to advance event*/
+  def nextEvent()(implicit  ec: ExecutionContext): Future[Unit] = {
+    val promise = Promise[Unit]()
+    promise.success()
+    promise.future
+  }
 }

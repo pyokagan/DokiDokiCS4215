@@ -15,9 +15,9 @@ object Game {
 
   // The game starts here.
   def run()(implicit ec: ExecutionContext): Future[Unit] = for {
-    _ <- scene("bg uni.jpg")
+    _ <- scene("bg uni")
     _ <- say("When we come out of the university, I spot her right away.")
-    _ <- show("sylvie green normal.png")
+    _ <- show("sylvie green normal")
     _ <- say("Sylvie's got a big heart and she's always been a good friend to me.")
     _ <- {
       // TODO: Menu
@@ -27,7 +27,7 @@ object Game {
   } yield ()
 
   def rightaway()(implicit ec: ExecutionContext): Future[Unit] = for {
-    _ <- show("sylvie green smile.png")
+    _ <- show("sylvie green smile")
     _ <- say(m, "Are you going home now? Wanna walk back with me?")
     _ <- say(s, "Why not?")
     _ <- sceneBlack()

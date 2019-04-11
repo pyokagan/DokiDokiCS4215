@@ -63,4 +63,10 @@ private object Util {
       throw new RuntimeException("No such resource: " + filename)
     readAllBytes(stream)
   }
+
+  def findResource(suffixes: Seq[String])(filename: String): String = {
+    suffixes.map(filename + _)
+      .find(getClass().getResource(_) != null)
+      .getOrElse(throw new RuntimeException("Cannot find resource: " + filename))
+  }
 }

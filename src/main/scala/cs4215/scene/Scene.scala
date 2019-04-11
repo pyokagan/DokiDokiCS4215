@@ -38,7 +38,7 @@ object Scene {
       RenderText(font, mvpMatrix, this.opacity, text, maxWidth)
   }
 
-  private def setViewportPreservingAspectRatio(width: Int, height: Int): Unit = {
+  def getViewportPreservingAspectRatio(width: Int, height: Int): (Int, Int, Int, Int) = {
     val aspectWH = AspectRatio
     val aspectHW = 1f / aspectWH
     val (viewW, viewH) = if (width > height) {
@@ -52,14 +52,25 @@ object Scene {
     }
     val viewX = (width - viewW) / 2f
     val viewY = (height - viewH) / 2f
-    glViewport(viewX.toInt, viewY.toInt, viewW.toInt, viewH.toInt)
+    (viewX.toInt, viewY.toInt, viewW.toInt, viewH.toInt)
+  }
+
+  private def setViewportPreservingAspectRatio(width: Int, height: Int): Unit = {
+    val (x, y, w, h) = getViewportPreservingAspectRatio(width, height)
+    glViewport(x, y, w, h)
   }
 
   def +=(sceneNode: SceneNode): Unit =
     sceneNodes += sceneNode
 
+  def ++=(sceneNodes: TraversableOnce[SceneNode]): Unit =
+    this.sceneNodes ++= sceneNodes
+
   def -=(sceneNode: SceneNode): Unit =
     sceneNodes -= sceneNode
+
+  def --=(sceneNodes: TraversableOnce[SceneNode]): Unit =
+    this.sceneNodes --= sceneNodes
 
   def render(viewportWidth: Int, viewportHeight: Int): Unit = {
     setViewportPreservingAspectRatio(viewportWidth, viewportHeight)

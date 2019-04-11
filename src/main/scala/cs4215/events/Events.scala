@@ -1,5 +1,7 @@
 package cs4215.events
 
+import cs4215.Util._
+import cs4215.scene.Scene
 import org.lwjgl.glfw.Callbacks.glfwFreeCallbacks
 import org.lwjgl.glfw.GLFW._
 
@@ -10,6 +12,8 @@ object Events {
   private val onKeyPress = scala.collection.mutable.HashSet.empty[Key => Unit]
   private val onMouseButtonPress = scala.collection.mutable.HashSet.empty[MouseButton => Unit]
   private val onTick = scala.collection.mutable.HashSet.empty[() => Unit]
+  var cursorXpos = 0.0
+  var cursorYpos = 0.0
 
   def init(window: Long): Unit = {
     glfwSetKeyCallback(window, (_, glfwKey, _, action, _) => {
@@ -26,6 +30,16 @@ object Events {
           runCallbacks()
         })
     })
+    glfwSetCursorPosCallback(window, (_, xpos, ypos) => withStack (stack => {
+      val width = stack.callocInt(1)
+      val height = stack.callocInt(1)
+      glfwGetWindowSize(window, width, height)
+      val (x, y, w, h) = Scene.getViewportPreservingAspectRatio(width.get(0), height.get(0))
+      val wRatio = Scene.VirtualWidth.toFloat / w
+      val hRatio = Scene.VirtualHeight.toFloat / h
+      cursorXpos = (xpos - x) * hRatio - (Scene.VirtualWidth / 2)
+      cursorYpos = ((height.get(0) - ypos) - y) * hRatio - (Scene.VirtualHeight / 2)
+    }))
   }
 
   def dispose(window: Long): Unit = {

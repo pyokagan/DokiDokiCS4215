@@ -1,6 +1,5 @@
 package cs4215.game
 
-import cs4215.events._
 import cs4215.game.Dsl._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -19,11 +18,9 @@ object Game {
     _ <- say("When we come out of the university, I spot her right away.")
     _ <- show("sylvie green normal")
     _ <- say("Sylvie's got a big heart and she's always been a good friend to me.")
-    _ <- {
-      // TODO: Menu
-      Events.nextEvent()
-    }
-    _ <- rightaway()
+    _ <- menu("As soon as she catches my eye, I decide...",
+      ("To ask her right away.", rightaway),
+      ("To ask her later.", later))
   } yield ()
 
   def rightaway()(implicit ec: ExecutionContext): Future[Unit] = for {

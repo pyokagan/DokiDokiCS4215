@@ -82,4 +82,49 @@ object Dsl {
       }
     } yield()
   }
+
+  def menu(msg: String, choices: (String, () => Future[Unit])*)(implicit ec: ExecutionContext): Future[Unit] = {
+    val BgImageHeight = 60 // with some padding
+    val totalHeight = choices.length * BgImageHeight
+    val bgNodes = (0 until choices.length).map(i => {
+      val p = new Scene.ImageNode("choice_idle_background")
+      p.pose.position.y = totalHeight / 2f - i * BgImageHeight
+      p.pose.position.z = 30f
+      p
+    })
+    val textNodes = choices.zipWithIndex.map { case ((text, _), i) =>
+      val p = new Scene.TextNode(text)
+      p.pose.position.x = -280f
+      p.pose.position.y = totalHeight / 2f - i * BgImageHeight - 8f
+      p.pose.position.z = 35f
+      p.pose.scale.set(0.25f, 0.25f, 1f)
+      p
+    }
+    val boxes = choices.zipWithIndex.map { case ((_, f), i) =>
+      val ycenter = totalHeight / 2f - i * BgImageHeight
+      val xmin = -280f
+      val ymin = ycenter - 17f
+      val xmax = 280f
+      val ymax = ycenter + 17f
+      (f, xmin, ymin, xmax, ymax)
+    }
+    val allNodes = bgNodes ++ textNodes
+    Scene ++= allNodes
+    def aux(): Future[Unit] = {
+      Events.waitForMouseButtonPress(MouseButtonLeft).flatMap(_ => {
+        boxes.find { case (_, xmin, ymin, xmax, ymax) =>
+          val xpos = Events.cursorXpos
+          val ypos = Events.cursorYpos
+          xpos >= xmin && xpos <= xmax && ypos >= ymin && ypos <= ymax
+        }.map { case (f, _, _, _, _) => Scene --= allNodes; f() }.getOrElse(aux())
+      })
+    }
+    Scene += textbox
+    Scene += msgNode
+    msgNode.text = msg
+    for {
+      _ <- fadeIn(msgNode, 0.15f)
+      _ <- aux()
+    } yield ()
+  }
 }

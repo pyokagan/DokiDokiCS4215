@@ -22,11 +22,16 @@ object Dsl {
     pose.scale.set(0.28f, 0.28f, 1f)
   }
 
+  def fadeIn(node: Scene.SceneNode, speed: Float)(implicit ec: ExecutionContext): Future[Unit] = {
+    def aux(left: Float): Future[Unit] = {
+      node.opacity = left
+      if (left >= 1f) Events.nextEvent()
+      else Events.waitForTick().flatMap(_ => aux(left + speed))
+    }
+    aux(0f)
+  }
+
   def say(char: Character, msg: String)(implicit ec: ExecutionContext): Future[Unit] = {
-    def fadeInMsgNode(): Future[Unit] = Events.waitForTick().flatMap(_ => {
-      msgNode.opacity += 0.15f
-      if (msgNode.opacity >= 1f) Events.nextEvent() else fadeInMsgNode()
-    })
     for {
       _ <- {
         Scene += textbox
@@ -34,8 +39,7 @@ object Dsl {
         Scene += msgNode
         msgNode.text = msg
         charName.text = char.name
-        msgNode.opacity = 0
-        fadeInMsgNode()
+        fadeIn(msgNode, 0.15f)
       }
       _ <- Events.waitForKeyPress(KeySpace)
       _ <- {

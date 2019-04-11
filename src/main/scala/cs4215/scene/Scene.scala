@@ -15,25 +15,27 @@ object Scene {
   private val mvpMatrix = new Matrix4f()
   private var sceneNodes = scala.collection.mutable.HashSet.empty[SceneNode]
 
-  abstract class SceneNode(val pose: Pose = new Pose()) {
+  abstract class SceneNode {
+    val pose: Pose
+    var opacity: Float
     def render(mvpMatrix: Matrix4fc): Unit
   }
 
-  class SquareNode(var color: Vector4f = new Vector4f(1f), pose: Pose = new Pose()) extends SceneNode(pose) {
+  class SquareNode(var color: Vector4f = new Vector4f(1f), val pose: Pose = new Pose(), var opacity: Float = 1f) extends SceneNode {
     def render(mvpMatrix: Matrix4fc): Unit =
-      RenderSquare(mvpMatrix, color)
+      RenderSquare(mvpMatrix, color, opacity)
   }
 
-  class ImageNode(var texture: Texture, var opacity: Float = 1.0f, pose: Pose = new Pose()) extends SceneNode(pose) {
+  class ImageNode(var texture: Texture, var opacity: Float = 1.0f, val pose: Pose = new Pose()) extends SceneNode {
     def render(mvpMatrix: Matrix4fc): Unit =
       RenderImage(texture, mvpMatrix, opacity)
   }
 
   class SpriteNode(texture: Texture, opacity: Float = 1.0f, pose: Pose = new Pose()) extends ImageNode(texture, opacity, pose)
 
-  class TextNode(var text: String = "", var maxWidth: Float = Float.PositiveInfinity, var font: Font = "OpenSans-Regular.ttf", var opacity: Float = 1.0f, pose: Pose = new Pose()) extends SceneNode(pose) {
+  class TextNode(var text: String = "", var maxWidth: Float = Float.PositiveInfinity, var font: Font = "OpenSans-Regular.ttf", var opacity: Float = 1.0f, val pose: Pose = new Pose()) extends SceneNode {
     def render(mvpMatrix: Matrix4fc): Unit =
-      RenderText(font, mvpMatrix, opacity, text, maxWidth)
+      RenderText(font, mvpMatrix, this.opacity, text, maxWidth)
   }
 
   private def setViewportPreservingAspectRatio(width: Int, height: Int): Unit = {

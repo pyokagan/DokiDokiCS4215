@@ -8,34 +8,28 @@ import scala.concurrent.{ExecutionContext, Future}
 object Dsl {
   case class Character(name: String = "", color: String = "#ffffff")
 
+  private lazy val msgNode = new Scene.TextNode {
+    maxWidth = 700.0f / 0.25f
+    pose.position.set(-360f, -250f, 20f)
+    pose.scale.set(0.25f, 0.25f, 1f)
+  }
+  private lazy val textbox = new Scene.ImageNode("textbox") {
+    pose.position.set(0f, -268f, 10f)
+  }
+  private lazy val charName = new Scene.TextNode {
+    maxWidth = 700f / 0.28f
+    pose.position.set(-380f, -205f, 20f)
+    pose.scale.set(0.28f, 0.28f, 1f)
+  }
+
   def say(char: Character, msg: String)(implicit ec: ExecutionContext): Future[Unit] = {
-    val msgNode = new Scene.TextNode(msg)
-    msgNode.maxWidth = 700.0f / 0.25f
-    msgNode.pose.position.z = 20.0f
-    msgNode.pose.position.y = -250.0f
-    msgNode.pose.position.x = -360.0f
-    msgNode.pose.scale.x = 0.25f
-    msgNode.pose.scale.y = 0.25f
-
-    //ToDo: Consider optimising textbox addition and removal
-    val textbox = new Scene.ImageNode("textbox.png")
-    textbox.pose.position.z = 10.0f
-    textbox.pose.position.y = -268.0f
-
-    //ToDo: Implement character color customisation
-    val charName = new Scene.TextNode(char.name)
-    charName.maxWidth = 700.0f / 0.28f
-    charName.pose.position.z = 20.0f
-    charName.pose.position.y = -205.0f
-    charName.pose.position.x = -380.0f
-    charName.pose.scale.x = 0.28f
-    charName.pose.scale.y = 0.28f
-
     for {
       _ <- {
         Scene += textbox
         Scene += charName
         Scene += msgNode
+        msgNode.text = msg
+        charName.text = char.name
         Events.waitForKeyPress(KeySpace)
       }
       _ <- {

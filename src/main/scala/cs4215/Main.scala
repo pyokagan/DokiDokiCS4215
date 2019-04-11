@@ -12,6 +12,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 object Main {
   val Title = "The Question"
+  val TicksPerSecond = 60 // Number of logic ticks per second -- affects animation speed
+  val TickPeriod = 1.0 / TicksPerSecond
   private var window = 0L
   private val callbackQueue = scala.collection.mutable.Queue.empty[Runnable]
 
@@ -40,12 +42,20 @@ object Main {
   private def loop(fut: Future[Unit]): Unit = withStack(stack => {
     val widthBuf = stack.callocInt(1)
     val heightBuf = stack.callocInt(1)
+    var lastTick = glfwGetTime()
 
     while (!glfwWindowShouldClose(window) && !fut.isCompleted) {
       // Run callbacks
       while (!callbackQueue.isEmpty) {
         val cb = callbackQueue.dequeue()
         cb.run()
+      }
+
+      // Logic ticks
+      val currentTime = glfwGetTime()
+      while (lastTick + TickPeriod < currentTime) {
+        Events.tick()
+        lastTick += TickPeriod
       }
 
       // Render

@@ -8,6 +8,7 @@ import scala.concurrent.{ExecutionContext, Future, Promise}
 object Events {
   private val onKeyPress = scala.collection.mutable.HashSet.empty[Key => Unit]
   private val onMouseButtonPress = scala.collection.mutable.HashSet.empty[MouseButton => Unit]
+  private val onTick = scala.collection.mutable.HashSet.empty[() => Unit]
 
   def init(window: Long): Unit = {
     glfwSetKeyCallback(window, (_, glfwKey, _, action, _) => {
@@ -22,6 +23,10 @@ object Events {
 
   def dispose(window: Long): Unit = {
     glfwFreeCallbacks(window)
+  }
+
+  def tick(): Unit = {
+    onTick.toList.foreach(_())
   }
 
   def waitForKeyPress(keyPredicate: Key => Boolean)(implicit ec: ExecutionContext): Future[Key] = {
@@ -63,6 +68,26 @@ object Events {
 
   def waitForMouseButtonPress()(implicit ex: ExecutionContext): Future[MouseButton] =
     waitForMouseButtonPress(_ => true)
+
+  def waitForTick(numTicks: Int = 1)(implicit ec: ExecutionContext): Future[Unit] = {
+    if (numTicks <= 0) {
+      nextEvent()
+    } else {
+      val promise = Promise[Unit]()
+      val cb = new Function0[Unit] {
+        var ticks = numTicks
+        def apply(): Unit = {
+          ticks -= 1
+          if (ticks <= 0) {
+            onTick -= this
+            promise.success()
+          }
+        }
+      }
+      onTick += cb
+      promise.future
+    }
+  }
 
   /** Returns empty future to advance event*/
   def nextEvent()(implicit  ec: ExecutionContext): Future[Unit] = {

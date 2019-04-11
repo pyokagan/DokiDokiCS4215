@@ -12,6 +12,10 @@ object Game {
 
   class Character(val name: String = "", var color: String = "#ffffff")
 
+  // Declare characters used by this game.
+  val s = new Character("Sylvie", color = "#abcdef")
+  val m = new Character("Me", color = "#c8c8ff")
+
   def say(char: Character, msg: String)(implicit ec: ExecutionContext): Future[Unit] = {
     val msgNode = new Scene.TextNode(msg)
     msgNode.maxWidth = 700.0f / 0.25f
@@ -62,15 +66,14 @@ object Game {
   def scene(texture: Texture)(implicit ec: ExecutionContext): Future[Unit] = {
     val bg = new Scene.ImageNode(texture)
     bg.pose.position.z = -100.0f
+    Scene.clear()
+    Scene += bg
+    Events.nextEvent()
+  }
 
-    for {
-      _ <- {
-        Scene.clear()
-        Scene += bg
-        Events.nextEvent
-      }
-    } yield()
-
+  def sceneBlack()(implicit ec: ExecutionContext): Future[Unit] = {
+    Scene.clear()
+    Events.nextEvent()
   }
 
   def show(texture: Texture)(implicit ec: ExecutionContext): Future[Unit] = {
@@ -82,34 +85,33 @@ object Game {
         Events.nextEvent
       }
     } yield()
-
   }
 
+  // The game starts here.
+  def run()(implicit ec: ExecutionContext): Future[Unit] = for {
+    _ <- scene("bg uni.jpg")
+    _ <- say("When we come out of the university, I spot her right away.")
+    _ <- show("sylvie green normal.png")
+    _ <- say("Sylvie's got a big heart and she's always been a good friend to me.")
+    _ <- {
+      // TODO: Menu
+      Events.nextEvent()
+    }
+    _ <- rightaway()
+  } yield ()
 
-  def run()(implicit ec: ExecutionContext): Future[Unit] = {
+  def rightaway()(implicit ec: ExecutionContext): Future[Unit] = for {
+    _ <- show("sylvie green smile.png")
+    _ <- say(m, "Are you going home now? Wanna walk back with me?")
+    _ <- say(s, "Why not?")
+    _ <- sceneBlack()
+    _ <- say("Good Ending.")
+  } yield ()
 
-    val testChar = new Character("Sylvie", "#abcdef")
-
-    for {
-      _ <- scene("bg uni.jpg")
-      _ <- say("Test1", "Veni Vidi Vici")
-      _ <- say("Hello World!")
-
-      _ <- scene("bg meadow.jpg")
-      _ <- say ("Test3", "In vino veritas")
-      _ <- say ("Me4", "Hey... Umm...")
-      _ <- show("sylvie blue giggle.png")
-      _ <- say(testChar, msg = "She giggles.")
-      _ <- show("sylvie green normal.png")
-      _ <- say(testChar, msg = "She's in green.")
-
-      _ <- scene("bg club.jpg")
-      _ <- say("Test7", "Ad Astra")
-
-      _ <- Events.waitForKeyPress(KeyEscape)
-    } yield()
-  }
-
-
+  def later()(implicit ec: ExecutionContext): Future[Unit] = for {
+    _ <- say("I can't get up the nerve to ask right now. With a gulp, I decide to ask her later.")
+    _ <- sceneBlack()
+    _ <- say("Bad Ending.")
+  } yield ()
 
 }

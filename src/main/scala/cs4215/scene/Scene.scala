@@ -13,7 +13,7 @@ object Scene {
   private val pMatrix = new Matrix4f().ortho(-VirtualWidth / 2f, VirtualWidth / 2f, -VirtualHeight / 2f, VirtualHeight / 2f, FrontZ, BackZ)
   private val mMatrix = new Matrix4f()
   private val mvpMatrix = new Matrix4f()
-  private val sceneNodes = scala.collection.mutable.HashSet.empty[SceneNode]
+  private var sceneNodes = scala.collection.mutable.HashSet.empty[SceneNode]
 
   abstract class SceneNode(val pose: Pose = new Pose()) {
     def render(mvpMatrix: Matrix4fc): Unit
@@ -87,9 +87,6 @@ object Scene {
   }
 
   def clearSprites(): Unit = {
-    sceneNodes.foreach(x => x match {
-      case a: SpriteNode => sceneNodes -= a
-      case _ =>
-    })
+    sceneNodes = sceneNodes.filter { case _: SpriteNode => false case _ => true }
   }
 }

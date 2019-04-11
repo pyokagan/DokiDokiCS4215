@@ -31,9 +31,9 @@ object Scene {
 
   class SpriteNode(texture: Texture, opacity: Float = 1.0f, pose: Pose = new Pose()) extends ImageNode(texture, opacity, pose)
 
-  class TextNode(var text: String = "", var maxWidth: Float = Float.PositiveInfinity, var font: Font = "OpenSans-Regular.ttf", pose: Pose = new Pose()) extends SceneNode(pose) {
+  class TextNode(var text: String = "", var maxWidth: Float = Float.PositiveInfinity, var font: Font = "OpenSans-Regular.ttf", var opacity: Float = 1.0f, pose: Pose = new Pose()) extends SceneNode(pose) {
     def render(mvpMatrix: Matrix4fc): Unit =
-      RenderText(font, mvpMatrix, text, maxWidth)
+      RenderText(font, mvpMatrix, opacity, text, maxWidth)
   }
 
   private def setViewportPreservingAspectRatio(width: Int, height: Int): Unit = {

@@ -23,6 +23,10 @@ object Dsl {
   }
 
   def say(char: Character, msg: String)(implicit ec: ExecutionContext): Future[Unit] = {
+    def fadeInMsgNode(): Future[Unit] = Events.waitForTick().flatMap(_ => {
+      msgNode.opacity += 0.15f
+      if (msgNode.opacity >= 1f) Events.nextEvent() else fadeInMsgNode()
+    })
     for {
       _ <- {
         Scene += textbox
@@ -30,8 +34,10 @@ object Dsl {
         Scene += msgNode
         msgNode.text = msg
         charName.text = char.name
-        Events.waitForKeyPress(KeySpace)
+        msgNode.opacity = 0
+        fadeInMsgNode()
       }
+      _ <- Events.waitForKeyPress(KeySpace)
       _ <- {
         Scene -= charName
         Scene -= msgNode

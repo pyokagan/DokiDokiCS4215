@@ -15,7 +15,6 @@ object Main {
   val TicksPerSecond = 60 // Number of logic ticks per second -- affects animation speed
   val TickPeriod = 1.0 / TicksPerSecond
   private var window = 0L
-  private val callbackQueue = scala.collection.mutable.Queue.empty[Runnable]
 
   def main(args: Array[String]): Unit = {
     val fut = init()
@@ -36,7 +35,7 @@ object Main {
     Events.init(window)
     glfwMakeContextCurrent(window)
     GL.createCapabilities()
-    Game.run()(ExecutionContext.fromExecutor(enqueueCallback))
+    Game.run()(ExecutionContext.fromExecutor(Events.enqueueCallback))
   }
 
   private def loop(fut: Future[Unit]): Unit = withStack(stack => {
@@ -45,11 +44,7 @@ object Main {
     var lastTick = glfwGetTime()
 
     while (!glfwWindowShouldClose(window) && !fut.isCompleted) {
-      // Run callbacks
-      while (!callbackQueue.isEmpty) {
-        val cb = callbackQueue.dequeue()
-        cb.run()
-      }
+      Events.runCallbacks()
 
       // Logic ticks
       val currentTime = glfwGetTime()
@@ -72,9 +67,5 @@ object Main {
     glfwDestroyWindow(window)
     glfwTerminate()
     glfwSetErrorCallback(null).free()
-  }
-
-  private def enqueueCallback(cb: Runnable): Unit = {
-    callbackQueue.enqueue(cb)
   }
 }

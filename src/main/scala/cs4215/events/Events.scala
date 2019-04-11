@@ -6,6 +6,7 @@ import org.lwjgl.glfw.GLFW._
 import scala.concurrent.{ExecutionContext, Future, Promise}
 
 object Events {
+  private val callbackQueue = scala.collection.mutable.Queue.empty[Runnable]
   private val onKeyPress = scala.collection.mutable.HashSet.empty[Key => Unit]
   private val onMouseButtonPress = scala.collection.mutable.HashSet.empty[MouseButton => Unit]
   private val onTick = scala.collection.mutable.HashSet.empty[() => Unit]
@@ -13,11 +14,17 @@ object Events {
   def init(window: Long): Unit = {
     glfwSetKeyCallback(window, (_, glfwKey, _, action, _) => {
       if (glfwKey != GLFW_KEY_UNKNOWN && action == GLFW_PRESS)
-        onKeyPress.toList.foreach(_(Key.fromGlfwKey(glfwKey)))
+        onKeyPress.toList.foreach(cb => {
+          cb(Key.fromGlfwKey(glfwKey))
+          runCallbacks()
+        })
     })
     glfwSetMouseButtonCallback(window, (_, glfwButton, action, _) => {
       if (action == GLFW_PRESS)
-        onMouseButtonPress.toList.foreach(_(MouseButton.fromGlfwMouseButton(glfwButton)))
+        onMouseButtonPress.toList.foreach(cb => {
+          cb(MouseButton.fromGlfwMouseButton(glfwButton))
+          runCallbacks()
+        })
     })
   }
 
@@ -25,8 +32,22 @@ object Events {
     glfwFreeCallbacks(window)
   }
 
+  def enqueueCallback(cb: Runnable): Unit = {
+    callbackQueue.enqueue(cb)
+  }
+
+  def runCallbacks(): Unit = {
+    while (callbackQueue.nonEmpty) {
+      val cb = callbackQueue.dequeue()
+      cb.run()
+    }
+  }
+
   def tick(): Unit = {
-    onTick.toList.foreach(_())
+    onTick.toList.foreach(cb => {
+      cb()
+      runCallbacks()
+    })
   }
 
   def waitForKeyPress(keyPredicate: Key => Boolean)(implicit ec: ExecutionContext): Future[Key] = {

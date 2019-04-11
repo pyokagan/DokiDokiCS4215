@@ -12,7 +12,7 @@ object Game {
 
   class Character(val name: String = "", var color: String = "#ffffff")
 
-  def say(char: Character = new Character(), msg: String)(implicit ec: ExecutionContext): Future[Unit] = {
+  def say(char: Character, msg: String)(implicit ec: ExecutionContext): Future[Unit] = {
     val msgNode = new Scene.TextNode(msg)
     msgNode.maxWidth = 700.0f / 0.25f
     msgNode.pose.position.z = 20.0f
@@ -55,6 +55,10 @@ object Game {
     say(new Character(charName), msg)
   }
 
+  def say(msg: String)(implicit ec: ExecutionContext): Future[Unit] = {
+    say(new Character(), msg)
+  }
+
   def scene(texture: Texture)(implicit ec: ExecutionContext): Future[Unit] = {
     val bg = new Scene.ImageNode(texture)
     bg.pose.position.z = -100.0f
@@ -89,7 +93,7 @@ object Game {
     for {
       _ <- scene("bg uni.jpg")
       _ <- say("Test1", "Veni Vidi Vici")
-      _ <- say (msg = "Hello World!")
+      _ <- say("Hello World!")
 
       _ <- scene("bg meadow.jpg")
       _ <- say ("Test3", "In vino veritas")

@@ -8,7 +8,7 @@ import org.lwjgl.glfw.GLFW._
 import org.lwjgl.glfw._
 import org.lwjgl.opengl._
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 object Main {
   val Title = "The Question"
@@ -35,7 +35,7 @@ object Main {
     Events.init(window)
     glfwMakeContextCurrent(window)
     GL.createCapabilities()
-    Game.run()(ExecutionContext.fromExecutor(Events.enqueueCallback))
+    Game.run()
   }
 
   private def loop(fut: Future[Unit]): Unit = withStack(stack => {

@@ -2,7 +2,7 @@ package cs4215.game
 
 import cs4215.game.Dsl._
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 /**
  * Main entry point for the game.
@@ -13,7 +13,7 @@ object Game {
   val m = new Character("Me", color = "#c8c8ff")
 
   // The game starts here.
-  def run()(implicit ec: ExecutionContext): Future[Unit] = for {
+  def run(): Future[Unit] = for {
     _ <- scene("bg uni")
     _ <- say("When we come out of the university, I spot her right away.")
     _ <- show("sylvie green normal")
@@ -23,7 +23,7 @@ object Game {
       ("To ask her later.", later))
   } yield ()
 
-  def rightaway()(implicit ec: ExecutionContext): Future[Unit] = for {
+  def rightaway(): Future[Unit] = for {
     _ <- show("sylvie green smile")
     _ <- say(m, "Are you going home now? Wanna walk back with me?")
     _ <- say(s, "Why not?")
@@ -31,7 +31,7 @@ object Game {
     _ <- say("Good Ending.")
   } yield ()
 
-  def later()(implicit ec: ExecutionContext): Future[Unit] = for {
+  def later(): Future[Unit] = for {
     _ <- say("I can't get up the nerve to ask right now. With a gulp, I decide to ask her later.")
     _ <- sceneBlack()
     _ <- say("Bad Ending.")

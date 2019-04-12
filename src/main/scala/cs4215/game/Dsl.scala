@@ -6,6 +6,7 @@ import cs4215.scene._
 import scala.concurrent.{ExecutionContext, Future}
 
 object Dsl {
+  implicit val ec: ExecutionContext = ExecutionContext.fromExecutor(Events.enqueueCallback)
   case class Character(name: String = "", color: String = "#ffffff")
 
   private lazy val msgNode = new Scene.TextNode {
@@ -22,7 +23,7 @@ object Dsl {
     pose.scale.set(0.28f, 0.28f, 1f)
   }
 
-  def fadeIn(node: Scene.SceneNode, speed: Float)(implicit ec: ExecutionContext): Future[Unit] = {
+  def fadeIn(node: Scene.SceneNode, speed: Float): Future[Unit] = {
     def aux(left: Float): Future[Unit] = {
       node.opacity = left
       if (left >= 1f) Events.nextEvent()
@@ -31,7 +32,7 @@ object Dsl {
     aux(0f)
   }
 
-  def say(char: Character, msg: String)(implicit ec: ExecutionContext): Future[Unit] = {
+  def say(char: Character, msg: String): Future[Unit] = {
     for {
       _ <- {
         Scene += textbox
@@ -51,15 +52,15 @@ object Dsl {
     } yield()
   }
 
-  def say(charName: String, msg: String)(implicit ec: ExecutionContext): Future[Unit] = {
+  def say(charName: String, msg: String): Future[Unit] = {
     say(new Character(charName), msg)
   }
 
-  def say(msg: String)(implicit ec: ExecutionContext): Future[Unit] = {
+  def say(msg: String): Future[Unit] = {
     say(new Character(), msg)
   }
 
-  def scene(texture: Texture)(implicit ec: ExecutionContext): Future[Unit] = {
+  def scene(texture: Texture): Future[Unit] = {
     val bg = new Scene.ImageNode(texture)
     bg.pose.position.z = -100.0f
     Scene.clear()
@@ -67,12 +68,12 @@ object Dsl {
     Events.nextEvent()
   }
 
-  def sceneBlack()(implicit ec: ExecutionContext): Future[Unit] = {
+  def sceneBlack(): Future[Unit] = {
     Scene.clear()
     Events.nextEvent()
   }
 
-  def show(texture: Texture)(implicit ec: ExecutionContext): Future[Unit] = {
+  def show(texture: Texture): Future[Unit] = {
     val node = new Scene.SpriteNode(texture)
     for {
       _ <- {
@@ -83,7 +84,7 @@ object Dsl {
     } yield()
   }
 
-  def menu(msg: String, choices: (String, () => Future[Unit])*)(implicit ec: ExecutionContext): Future[Unit] = {
+  def menu(msg: String, choices: (String, () => Future[Unit])*): Future[Unit] = {
     val BgImageHeight = 60 // with some padding
     val totalHeight = choices.length * BgImageHeight
     val bgNodes = (0 until choices.length).map(i => {

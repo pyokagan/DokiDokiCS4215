@@ -9,6 +9,8 @@ import org.lwjgl.stb.STBTTFontinfo
 import org.lwjgl.stb.STBTruetype._
 import org.lwjgl.system.MemoryUtil
 
+import scala.language.implicitConversions
+
 final class Font(val texture: Texture, val charMap: Map[Char, Font.CharInfo], val height: Float) {
   private[scene] def dispose(): Unit = {
     texture.dispose()

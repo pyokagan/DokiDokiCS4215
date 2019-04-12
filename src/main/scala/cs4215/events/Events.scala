@@ -115,7 +115,7 @@ object Events {
           ticks -= 1
           if (ticks <= 0) {
             onTick -= this
-            promise.success()
+            promise.success(())
           }
         }
       }
@@ -127,7 +127,7 @@ object Events {
   /** Returns empty future to advance event*/
   def nextEvent()(implicit  ec: ExecutionContext): Future[Unit] = {
     val promise = Promise[Unit]()
-    promise.success()
+    promise.success(())
     promise.future
   }
 }

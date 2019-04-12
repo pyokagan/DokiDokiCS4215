@@ -17,8 +17,6 @@ object Dependencies {
   lazy val lwjglNative = "org.lwjgl" % "lwjgl" % lwjglVersion classifier lwjglClassifier
   lazy val lwjglGlfw = "org.lwjgl" % "lwjgl-glfw" % lwjglVersion
   lazy val lwjglGlfwNative = "org.lwjgl" % "lwjgl-glfw" % lwjglVersion classifier lwjglClassifier
-  lazy val lwjglOpenal = "org.lwjgl" % "lwjgl-openal" % lwjglVersion
-  lazy val lwjglOpenalNative = "org.lwjgl" % "lwjgl-openal" % lwjglVersion classifier lwjglClassifier
   lazy val lwjglOpengl = "org.lwjgl" % "lwjgl-opengl" % lwjglVersion
   lazy val lwjglOpenglNative = "org.lwjgl" % "lwjgl-opengl" % lwjglVersion classifier lwjglClassifier
   lazy val lwjglStb = "org.lwjgl" % "lwjgl-stb" % lwjglVersion

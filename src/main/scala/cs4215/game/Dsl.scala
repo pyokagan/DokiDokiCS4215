@@ -7,7 +7,10 @@ import scala.concurrent.{ExecutionContext, Future}
 
 object Dsl {
   implicit val ec: ExecutionContext = ExecutionContext.fromExecutor(Events.enqueueCallback)
-  case class Character(name: String = "", color: String = "#ffffff")
+  case class Character(name: String = "", color: String = "#ffffff") {
+    def :<(m: String): Future[Unit] =
+      say(this, m)
+  }
 
   implicit class FutureWithDsl[T](a: Future[T]) {
     def |>[S](b: => Future[S]): Future[S] =

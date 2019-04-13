@@ -24,8 +24,8 @@ object Game {
 
   def rightaway(): Future[Unit] =
     show("sylvie green smile") |>
-    say(m, "Are you going home now? Wanna walk back with me?") |>
-    say(s, "Why not?") |>
+    m :< "Are you going home now? Wanna walk back with me?" |>
+    s :< "Why not?" |>
     sceneBlack() |>
     "Good Ending."
 

@@ -15,9 +15,9 @@ object Game {
   // The game starts here.
   def run(): Future[Unit] =
     scene("bg uni") |>
-    say("When we come out of the university, I spot her right away.") |>
+    "When we come out of the university, I spot her right away." |>
     show("sylvie green normal") |>
-    say("Sylvie's got a big heart and she's always been a good friend to me.") |>
+    "Sylvie's got a big heart and she's always been a good friend to me." |>
     menu("As soon as she catches my eye, I decide...",
       ("To ask her right away.", rightaway),
       ("To ask her later.", later))
@@ -27,10 +27,10 @@ object Game {
     say(m, "Are you going home now? Wanna walk back with me?") |>
     say(s, "Why not?") |>
     sceneBlack() |>
-    say("Good Ending.")
+    "Good Ending."
 
   def later(): Future[Unit] =
-    say("I can't get up the nerve to ask right now. With a gulp, I decide to ask her later.") |>
+    "I can't get up the nerve to ask right now. With a gulp, I decide to ask her later." |>
     sceneBlack() |>
-    say("Bad Ending.")
+    "Bad Ending."
 }

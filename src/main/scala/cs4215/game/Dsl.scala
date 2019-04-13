@@ -12,6 +12,17 @@ object Dsl {
   implicit class FutureWithDsl[T](a: Future[T]) {
     def |>[S](b: => Future[S]): Future[S] =
       a.flatMap(_ => b)
+
+    def |>(b: String): Future[Unit] =
+      a.flatMap(_ => say(b))
+  }
+
+  implicit class StringWithDsl(a: String) {
+    def |>[S](b: => Future[S]): Future[S] =
+      say(a).flatMap(_ => b)
+
+    def |>(b: String): Future[Unit] =
+      say(a).flatMap(_ => say(b))
   }
 
   private lazy val msgNode = new Scene.TextNode {

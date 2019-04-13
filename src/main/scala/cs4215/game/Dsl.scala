@@ -9,6 +9,11 @@ object Dsl {
   implicit val ec: ExecutionContext = ExecutionContext.fromExecutor(Events.enqueueCallback)
   case class Character(name: String = "", color: String = "#ffffff")
 
+  implicit class FutureWithDsl[T](a: Future[T]) {
+    def |>[S](b: => Future[S]): Future[S] =
+      a.flatMap(_ => b)
+  }
+
   private lazy val msgNode = new Scene.TextNode {
     maxWidth = 700.0f / 0.25f
     pose.position.set(-360f, -250f, 20f)
@@ -123,9 +128,6 @@ object Dsl {
     Scene += textbox
     Scene += msgNode
     msgNode.text = msg
-    for {
-      _ <- fadeIn(msgNode, 0.15f)
-      _ <- aux()
-    } yield ()
+    fadeIn(msgNode, 0.15f) |> aux()
   }
 }

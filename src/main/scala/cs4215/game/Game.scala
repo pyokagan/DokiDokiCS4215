@@ -13,27 +13,24 @@ object Game {
   val m = new Character("Me", color = "#c8c8ff")
 
   // The game starts here.
-  def run(): Future[Unit] = for {
-    _ <- scene("bg uni")
-    _ <- say("When we come out of the university, I spot her right away.")
-    _ <- show("sylvie green normal")
-    _ <- say("Sylvie's got a big heart and she's always been a good friend to me.")
-    _ <- menu("As soon as she catches my eye, I decide...",
+  def run(): Future[Unit] =
+    scene("bg uni") |>
+    say("When we come out of the university, I spot her right away.") |>
+    show("sylvie green normal") |>
+    say("Sylvie's got a big heart and she's always been a good friend to me.") |>
+    menu("As soon as she catches my eye, I decide...",
       ("To ask her right away.", rightaway),
       ("To ask her later.", later))
-  } yield ()
 
-  def rightaway(): Future[Unit] = for {
-    _ <- show("sylvie green smile")
-    _ <- say(m, "Are you going home now? Wanna walk back with me?")
-    _ <- say(s, "Why not?")
-    _ <- sceneBlack()
-    _ <- say("Good Ending.")
-  } yield ()
+  def rightaway(): Future[Unit] =
+    show("sylvie green smile") |>
+    say(m, "Are you going home now? Wanna walk back with me?") |>
+    say(s, "Why not?") |>
+    sceneBlack() |>
+    say("Good Ending.")
 
-  def later(): Future[Unit] = for {
-    _ <- say("I can't get up the nerve to ask right now. With a gulp, I decide to ask her later.")
-    _ <- sceneBlack()
-    _ <- say("Bad Ending.")
-  } yield ()
+  def later(): Future[Unit] =
+    say("I can't get up the nerve to ask right now. With a gulp, I decide to ask her later.") |>
+    sceneBlack() |>
+    say("Bad Ending.")
 }

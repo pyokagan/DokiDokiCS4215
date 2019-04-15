@@ -15,28 +15,30 @@ object Scene {
   private val mvpMatrix = new Matrix4f()
   private var sceneNodes = scala.collection.mutable.HashSet.empty[SceneNode]
 
-  abstract class SceneNode(val pose: Pose = new Pose()) {
+  abstract class SceneNode {
+    val pose: Pose
+    var opacity: Float
     def render(mvpMatrix: Matrix4fc): Unit
   }
 
-  class SquareNode(var color: Vector4f = new Vector4f(1f), pose: Pose = new Pose()) extends SceneNode(pose) {
+  class SquareNode(var color: Vector4f = new Vector4f(1f), val pose: Pose = new Pose(), var opacity: Float = 1f) extends SceneNode {
     def render(mvpMatrix: Matrix4fc): Unit =
-      RenderSquare(mvpMatrix, color)
+      RenderSquare(mvpMatrix, color, opacity)
   }
 
-  class ImageNode(var texture: Texture, var opacity: Float = 1.0f, pose: Pose = new Pose()) extends SceneNode(pose) {
+  class ImageNode(var texture: Texture, var opacity: Float = 1.0f, val pose: Pose = new Pose()) extends SceneNode {
     def render(mvpMatrix: Matrix4fc): Unit =
       RenderImage(texture, mvpMatrix, opacity)
   }
 
   class SpriteNode(texture: Texture, opacity: Float = 1.0f, pose: Pose = new Pose()) extends ImageNode(texture, opacity, pose)
 
-  class TextNode(var text: String, var maxWidth: Float = Float.PositiveInfinity, var font: Font = "OpenSans-Regular.ttf", pose: Pose = new Pose()) extends SceneNode(pose) {
+  class TextNode(var text: String = "", var maxWidth: Float = Float.PositiveInfinity, var font: Font = "OpenSans-Regular.ttf", var opacity: Float = 1.0f, val pose: Pose = new Pose()) extends SceneNode {
     def render(mvpMatrix: Matrix4fc): Unit =
-      RenderText(font, mvpMatrix, text, maxWidth)
+      RenderText(font, mvpMatrix, this.opacity, text, maxWidth)
   }
 
-  private def setViewportPreservingAspectRatio(width: Int, height: Int): Unit = {
+  def getViewportPreservingAspectRatio(width: Int, height: Int): (Int, Int, Int, Int) = {
     val aspectWH = AspectRatio
     val aspectHW = 1f / aspectWH
     val (viewW, viewH) = if (width > height) {
@@ -50,14 +52,25 @@ object Scene {
     }
     val viewX = (width - viewW) / 2f
     val viewY = (height - viewH) / 2f
-    glViewport(viewX.toInt, viewY.toInt, viewW.toInt, viewH.toInt)
+    (viewX.toInt, viewY.toInt, viewW.toInt, viewH.toInt)
+  }
+
+  private def setViewportPreservingAspectRatio(width: Int, height: Int): Unit = {
+    val (x, y, w, h) = getViewportPreservingAspectRatio(width, height)
+    glViewport(x, y, w, h)
   }
 
   def +=(sceneNode: SceneNode): Unit =
     sceneNodes += sceneNode
 
+  def ++=(sceneNodes: TraversableOnce[SceneNode]): Unit =
+    this.sceneNodes ++= sceneNodes
+
   def -=(sceneNode: SceneNode): Unit =
     sceneNodes -= sceneNode
+
+  def --=(sceneNodes: TraversableOnce[SceneNode]): Unit =
+    this.sceneNodes --= sceneNodes
 
   def render(viewportWidth: Int, viewportHeight: Int): Unit = {
     setViewportPreservingAspectRatio(viewportWidth, viewportHeight)

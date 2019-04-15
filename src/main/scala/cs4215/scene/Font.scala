@@ -9,6 +9,8 @@ import org.lwjgl.stb.STBTTFontinfo
 import org.lwjgl.stb.STBTruetype._
 import org.lwjgl.system.MemoryUtil
 
+import scala.language.implicitConversions
+
 final class Font(val texture: Texture, val charMap: Map[Char, Font.CharInfo], val height: Float) {
   private[scene] def dispose(): Unit = {
     texture.dispose()
@@ -21,7 +23,7 @@ object Font {
   val TexWidth = 1024
   val TexHeight = 1024
   val SdfSize = 128.0f // the larger this is, the better large font sizes look
-  val PixelDistScale = 2.0f // Trades off precision with ability to handle *smaller* sizes
+  val PixelDistScale = 20.0f // Trades off precision with ability to handle *smaller* sizes
   val OneEdgeValue = 128.toByte
   val Padding = 20
   val Characters = {

@@ -20,8 +20,9 @@ private object RenderSquare {
   """, """
     #version 130
     uniform vec4 uColor;
+    uniform float uOpacity;
     void main() {
-      gl_FragColor = uColor;
+      gl_FragColor = vec4(uColor.rgb, uColor.a * uOpacity);
     }
   """)
   private val vertexData: Array[Float] = Array(
@@ -44,11 +45,12 @@ private object RenderSquare {
     vao
   }
 
-  def apply(uMVPMatrix: Matrix4fc, uColor: Vector4fc): Unit = {
+  def apply(uMVPMatrix: Matrix4fc, uColor: Vector4fc, uOpacity: Float): Unit = {
     glBindVertexArray(vao)
     program.use()
     program.setUniform("uMVPMatrix", uMVPMatrix)
     program.setUniform("uColor", uColor)
+    program.setUniform("uOpacity", uOpacity)
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0)
     glBindVertexArray(0)
   }

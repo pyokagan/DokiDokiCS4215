@@ -25,11 +25,13 @@ private object RenderText {
     #version 130
     in vec2 vUV;
     uniform sampler2D uTexture;
+    uniform float uOpacity;
     void main() {
       float a = texture(uTexture, vUV).r;
-      gl_FragColor = vec4(1.0f, 1.0f, 1.0f, floor(a + 0.5f));
+      gl_FragColor = vec4(1.0f, 1.0f, 1.0f, floor(a + 0.6f));
       float w = fwidth(a);
       gl_FragColor.a *= smoothstep(0.5 - w, 0.5 + w, a);
+      gl_FragColor.a *= uOpacity;
     }
   """)
   val buffers = scala.collection.mutable.ArrayBuffer.empty[(Int, Int, java.nio.FloatBuffer)]
@@ -84,7 +86,7 @@ private object RenderText {
     (newX, newY)
   }
 
-  def apply(font: Font, uMVPMatrix: Matrix4fc, text: String, maxWidth: Float = Float.PositiveInfinity): Unit = {
+  def apply(font: Font, uMVPMatrix: Matrix4fc, opacity: Float, text: String, maxWidth: Float = Float.PositiveInfinity): Unit = {
     if (numBuffersUsed >= buffers.length) {
       val glVao = glGenVertexArrays()
       val glBuf = glGenBuffers()
@@ -115,6 +117,7 @@ private object RenderText {
     program.setUniform("uMVPMatrix", uMVPMatrix)
     font.texture.bind(0)
     program.setUniform("uTexture", 0)
+    program.setUniform("uOpacity", opacity)
     glDrawElements(GL_TRIANGLES, bufPos / 4 * 6, GL_UNSIGNED_SHORT, 0)
     glBindVertexArray(0)
   }

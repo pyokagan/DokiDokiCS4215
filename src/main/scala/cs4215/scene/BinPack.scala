@@ -1,8 +1,8 @@
 package cs4215.scene
 
 private final class BinPack(val w: Int, val h: Int) {
-  final case class BinNode(x: Int, y: Int, w: Int)
-  final case class Rect(x: Int, y: Int, w: Int, h: Int)
+  case class BinNode(x: Int, y: Int, w: Int)
+  case class Rect(x: Int, y: Int, w: Int, h: Int)
   private val nodes = scala.collection.mutable.ArrayBuffer.empty[BinNode] :+ BinNode(1, 1, w - 1)
 
   // Test if region (w, h) fits into nodes(i)

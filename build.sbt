@@ -4,6 +4,7 @@ ThisBuild / scalaVersion     := "2.12.8"
 ThisBuild / version          := "0.1.0-SNAPSHOT"
 ThisBuild / organization     := "cs4215"
 ThisBuild / organizationName := "cs4215"
+ThisBuild / scalacOptions ++= Seq("-deprecation", "-feature", "-unchecked")
 
 lazy val root = (project in file("."))
   .settings(
@@ -13,8 +14,6 @@ lazy val root = (project in file("."))
     libraryDependencies += lwjglNative,
     libraryDependencies += lwjglGlfw,
     libraryDependencies += lwjglGlfwNative,
-    libraryDependencies += lwjglOpenal,
-    libraryDependencies += lwjglOpenalNative,
     libraryDependencies += lwjglOpengl,
     libraryDependencies += lwjglOpenglNative,
     libraryDependencies += lwjglStb,

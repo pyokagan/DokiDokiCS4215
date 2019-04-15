@@ -24,10 +24,12 @@ final class Texture(private val glTexture: Int, val width: Int, val height: Int)
 }
 
 object Texture {
+  val ImageSuffixes = Seq("", ".png", ".jpg")
+
   private val textures = scala.collection.mutable.HashMap.empty[String, Texture]
 
   def apply(s: String): Texture =
-    textures.getOrElseUpdate(s, make2d(readResource(s)))
+    textures.getOrElseUpdate(s, make2d(readResource(findResource(ImageSuffixes)(s))))
 
   private def make2d(data: Array[Byte]): Texture = withMalloc(data)(make2d)
   private def make2d(data: java.nio.ByteBuffer): Texture = withStack(stack => {

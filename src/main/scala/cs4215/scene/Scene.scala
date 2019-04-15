@@ -33,9 +33,9 @@ object Scene {
 
   class SpriteNode(texture: Texture, opacity: Float = 1.0f, pose: Pose = new Pose()) extends ImageNode(texture, opacity, pose)
 
-  class TextNode(var text: String = "", var maxWidth: Float = Float.PositiveInfinity, var font: Font = "OpenSans-Regular.ttf", var opacity: Float = 1.0f, val pose: Pose = new Pose()) extends SceneNode {
+  class TextNode(var text: String = "", var maxWidth: Float = Float.PositiveInfinity, var font: Font = "OpenSans-Regular.ttf", var opacity: Float = 1.0f, var color: Vector3f = new Vector3f(1.0f, 1.0f, 1.0f), val pose: Pose = new Pose()) extends SceneNode {
     def render(mvpMatrix: Matrix4fc): Unit =
-      RenderText(font, mvpMatrix, this.opacity, text, maxWidth)
+      RenderText(font, mvpMatrix, this.opacity, text, maxWidth, color)
   }
 
   def getViewportPreservingAspectRatio(width: Int, height: Int): (Int, Int, Int, Int) = {

@@ -2,6 +2,7 @@ package cs4215.game
 
 import cs4215.events._
 import cs4215.scene._
+import org.joml.Vector3f
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -42,6 +43,13 @@ object Dsl {
     pose.scale.set(0.28f, 0.28f, 1f)
   }
 
+  def parseHexColour(hexcode: String): Vector3f = {
+    val hexdigitR = raw"#([0-9abcdefABCDEF]{2})([0-9abcdefABCDEF]{2})([0-9abcdefABCDEF]{2})".r
+    hexcode match {
+      case hexdigitR(red, green, blue) => new Vector3f(Integer.parseInt(red, 16)/255.0f, Integer.parseInt(green, 16)/255.0f, Integer.parseInt(blue, 16)/255.0f)
+    }
+  }
+
   def fadeIn(node: Scene.SceneNode, speed: Float): Future[Unit] = {
     def aux(left: Float): Future[Unit] = {
       node.opacity = left
@@ -59,6 +67,7 @@ object Dsl {
         Scene += msgNode
         msgNode.text = msg
         charName.text = char.name
+        charName.color = parseHexColour(char.color)
         fadeIn(msgNode, 0.15f)
       }
       _ <- Events.waitForMouseButtonPress(MouseButtonLeft)
